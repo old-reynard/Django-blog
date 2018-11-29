@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block content %}
+  
+<div class="col-sm-8 col-sm-offset-3">
+    <h1>{{ title }}</h1>
+    <div class="row">
+        <!-- url 'detail' id=post.id -->
+        {% for post in object_list %}
+        <div class="col-sm-12">
+            <div class="thumbnail">
+                {% if post.image %}
+                <img src="{{ post.image.url }}" class="img-responsive" alt="">
+                {% endif %}
+                <div class="caption">
+                    <h3><a href="{{ post.get_absolute_url }}">{{ post.title }}</a> <small>{{ post.timestamp | timesince }} ago</small> </h3>
+                    {% if post.user.get_full_name %}<p>By {{ post.user.get_full_name }}</p>{% endif %}
+                    <p>{{ post.content | linebreaks | truncatechars:120 }}</p>  </br>
+                    <!-- <p><a href="{{ post.get_absolute_url }}" class="btn btn-primary" role="button"></a></p> -->
+                </div>
+            </div> 
+        </div>
+        <hr/>
+        {% endfor %}
+
+        <div class="pagination">
+                <span class="step-links">
+                    {% if object_list.has_previous %}
+                        <a href="?{{ page_var }}=1">&laquo; first</a>
+                        <a href="?{{ page_var }}={{ object_list.previous_page_number }}">previous</a>
+                    {% endif %}
+            
+                    <span class="current">
+                            {{ page_var }} {{ object_list.number }} of {{ object_list.paginator.num_pages }}.
+                    </span>
+            
+                    {% if object_list.has_next %}
+                        <a href="?{{ page_var }}={{ object_list.next_page_number }}">next</a>
+                        <a href="?{{ page_var }}={{ object_list.paginator.num_pages }}">last &raquo;</a>
+                    {% endif %}
+                </span>
+            </div>
+    </div>  
+</div>
+{% endblock content %}
