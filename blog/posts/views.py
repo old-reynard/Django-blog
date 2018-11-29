@@ -28,6 +28,9 @@ def posts_create(request):
 
 def posts_detail(request, id): # retrieve
     instance = get_object_or_404(Post, id=id)
+    if instance.draft or instance.publish > timezone.now().date():
+        if not request.user.is_staff or not request.user.is_superuser:
+            raise Http404
     share_string = quote_plus(instance.content)
     context = {
         "title" : instance.title,
@@ -38,7 +41,7 @@ def posts_detail(request, id): # retrieve
 
 
 def posts_list(request): # list items
-    queryset_list = Post.objects.filter(draft=False).filter(publish__lte=timezone.now())#all()
+    queryset_list = Post.objects.active()
     paginator = Paginator(queryset_list, 5)
 
     page_var = 'page'
